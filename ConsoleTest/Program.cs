@@ -6,6 +6,8 @@ namespace ConsoleTest
 {
 	class MainClass
 	{
+		private static string BlankLine { get; set; }
+
 		public static void Main(string[] args)
 		{
 			bool exit = false;
@@ -14,10 +16,8 @@ namespace ConsoleTest
 			int WriterRow = Console.WindowHeight - 1;
 			const int MonitorRow = 0;
 			const int BufferSize = 100;
+			BlankLine = new string(' ', Console.WindowWidth);
 			var buffer = new List<string>(BufferSize);
-			//Console.SetBufferSize(80, 25);
-			Console.BufferWidth = 80;
-			Console.BufferHeight = 25;
 			Console.SetCursorPosition(0, WriterRow);
 			do
 			{
@@ -47,7 +47,7 @@ namespace ConsoleTest
 				buffer.Add(line);
 				newLine = false; 
 				keys.Clear(); // Clear buffers
-				ClearRow(WriterRow);
+				ClearRow(WriterRow, null);
 				WriteMonitor(buffer);
 				Console.SetCursorPosition(0, WriterRow); 
 			} while (exit == false);
@@ -58,24 +58,27 @@ namespace ConsoleTest
 			int numWindowRows = Console.WindowHeight - 1;
 			int rowsToWrite = (buffer.Count > numWindowRows) ? numWindowRows : buffer.Count;
 			int bufferRowStart = (buffer.Count > numWindowRows) ? buffer.Count - numWindowRows : 0;
-			for (int row = 0; row < numWindowRows; row++)
+			string line = null;
+			for (int row = 0; row < numWindowRows; row++)				
 			{
-				ClearRow(row);
+				line = null;
 				if (row < rowsToWrite)
 				{
-					Console.SetCursorPosition(0, row);
-					Console.Write(buffer[bufferRowStart + row]);
+					int bufferRow = bufferRowStart + row;
+					int thisRowLength = buffer[bufferRow].Length;
+					line = buffer[bufferRow] + BlankLine.Substring(thisRowLength, BlankLine.Length - thisRowLength); 
 				}
+				ClearRow(row, line);
 			}
 		}
 
-		private static void ClearRow(int rowNumber)
+		private static void ClearRow(int rowNumber, string line)
 		{
-			for (int col = 0; col < Console.BufferWidth; col++)
-			{
-				Console.SetCursorPosition(col, rowNumber);
-				Console.Write(" ");
-			}
+			Console.SetCursorPosition(0, rowNumber);
+			if (line == null)
+				Console.Write(BlankLine);
+			else
+				Console.Write(line);
 		}
 	}
 }
