@@ -18,6 +18,8 @@ namespace ConsoleTest
 			const int BufferSize = 100;
 			BlankLine = new string(' ', Console.WindowWidth);
 			var buffer = new List<string>(BufferSize);
+			Console.BackgroundColor = ConsoleColor.Black;
+			WriteMonitor(buffer);
 			Console.SetCursorPosition(0, WriterRow);
 			do
 			{
@@ -55,6 +57,7 @@ namespace ConsoleTest
 
 		private static void WriteMonitor(List<string> buffer)
 		{
+			Console.ForegroundColor = ConsoleColor.Gray;
 			int numWindowRows = Console.WindowHeight - 1;
 			int rowsToWrite = (buffer.Count > numWindowRows) ? numWindowRows : buffer.Count;
 			int bufferRowStart = (buffer.Count > numWindowRows) ? buffer.Count - numWindowRows : 0;
@@ -69,7 +72,8 @@ namespace ConsoleTest
 					line = buffer[bufferRow] + BlankLine.Substring(thisRowLength, BlankLine.Length - thisRowLength); 
 				}
 				ClearRow(row, line);
-			}
+			}		
+			Console.ForegroundColor = ConsoleColor.Green;
 		}
 
 		private static void ClearRow(int rowNumber, string line)
